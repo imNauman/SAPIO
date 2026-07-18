@@ -39,33 +39,73 @@ on conflict (name) do nothing;
 -- ---------------------------------------------------------------------------
 -- reports: the report itself.
 -- ---------------------------------------------------------------------------
-create table if not exists public.reports (
-  id               uuid primary key default gen_random_uuid(),
-  reporter_user_id uuid not null references auth.users (id) on delete cascade,
-  reported_user_id uuid not null references auth.users (id) on delete cascade,
-  message_id       uuid references public.messages (id) on delete set null,
-  photo_id         uuid references public.profile_photos (id) on delete set null,
-  category_id      uuid not null references public.report_categories (id),
-  description      text,
-  status           text not null default 'open'
-                  check (status in ('open', 'under_review', 'resolved', 'dismissed')),
-  priority         text not null default 'normal'
-                  check (priority in ('low', 'normal', 'high', 'urgent')),
-  created_at       timestamptz not null default now(),
-  updated_at       timestamptz not null default now(),
-  deleted_at       timestamptz,
+-- The reports table may already exist as a minimal stub created by an earlier
+-- migration (0007_user_preferences.sql). If so, we promote it to the full
+-- schema below instead of re-declaring CREATE TABLE (which would be a no-op
+-- and leave the `status` column missing, breaking the partial index at the
+-- bottom of this file).
+do $do$
+begin
+  if not exists (
+    select 1 from information_schema.tables
+    where table_schema = 'public' and table_name = 'reports'
+  ) then
+    create table public.reports (
+      id               uuid primary key default gen_random_uuid(),
+      reporter_user_id uuid not null references auth.users (id) on delete cascade,
+      reported_user_id uuid not null references auth.users (id) on delete cascade,
+      message_id       uuid references public.messages (id) on delete set null,
+      photo_id         uuid references public.profile_photos (id) on delete set null,
+      category_id      uuid not null references public.report_categories (id),
+      description      text,
+      status           text not null default 'open'
+                      check (status in ('open', 'under_review', 'resolved', 'dismissed')),
+      priority         text not null default 'normal'
+                      check (priority in ('low', 'normal', 'high', 'urgent')),
+      created_at       timestamptz not null default now(),
+      updated_at       timestamptz not null default now(),
+      deleted_at       timestamptz
+    );
+  elsif not exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'reports' and column_name = 'status'
+  ) then
+    -- Minimal stub from 0007: promote it to the full schema.
+    alter table public.reports
+      add column message_id  uuid references public.messages (id) on delete set null,
+      add column photo_id    uuid references public.profile_photos (id) on delete set null,
+      add column category_id uuid references public.report_categories (id),
+      add column description text,
+      add column status text not null default 'open'
+        check (status in ('open', 'under_review', 'resolved', 'dismissed')),
+      add column priority text not null default 'normal'
+        check (priority in ('low', 'normal', 'high', 'urgent')),
+      add column updated_at timestamptz not null default now(),
+      add column deleted_at timestamptz;
+    alter table public.reports drop column if exists reason;
+    -- Backfill category_id (safe whether or not rows already exist) then enforce NOT NULL.
+    update public.reports
+      set category_id = (select id from public.report_categories order by severity desc limit 1)
+      where category_id is null;
+    alter table public.reports alter column category_id set not null;
+  end if;
+end $do$;
 
-  -- Exactly one target: a report is about a profile, a message, OR a photo.
-  constraint reports_one_target
+-- Exactly one target: a report is about a profile, a message, OR a photo.
+alter table public.reports
+  drop constraint if exists reports_one_target;
+alter table public.reports
+  add constraint reports_one_target
     check (
       (
         (message_id is not null)::int +
         (photo_id is not null)::int
       ) <= 1
-    )
-);
+    );
 
 -- Cannot report yourself.
+alter table public.reports
+  drop constraint if exists reports_no_self_report;
 alter table public.reports
   add constraint reports_no_self_report
   check (reporter_user_id <> reported_user_id);
