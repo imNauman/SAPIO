@@ -135,32 +135,28 @@ on conflict (key) do nothing;
 -- ---------------------------------------------------------------------------
 -- Seed: role -> permission mapping
 -- ---------------------------------------------------------------------------
-with role_ids as (
-  select id, name from admin_roles
-),
-perm_keys as (
-  select key from admin_permissions
-)
+-- A CTE (WITH ...) only scopes to the single statement that follows it, so we
+-- reference the base tables directly instead of a shared CTE.
 -- super_admin: every permission
 insert into admin_role_permissions (role_id, permission_key)
 select r.id, p.key
-from role_ids r
-cross join perm_keys p
+from admin_roles r
+cross join admin_permissions p
 where r.name = 'super_admin'
 on conflict (role_id, permission_key) do nothing;
 
 -- admin: all except manage_admins
 insert into admin_role_permissions (role_id, permission_key)
 select r.id, p.key
-from role_ids r
-cross join perm_keys p
+from admin_roles r
+cross join admin_permissions p
 where r.name = 'admin' and p.key <> 'manage_admins'
 on conflict (role_id, permission_key) do nothing;
 
 -- moderator: reports, verification, content, analytics
 insert into admin_role_permissions (role_id, permission_key)
 select r.id, p.key
-from role_ids r
+from admin_roles r
 cross join (select key from admin_permissions where key in
   ('manage_reports','manage_verification','manage_content','view_analytics')) p
 where r.name = 'moderator'
@@ -169,7 +165,7 @@ on conflict (role_id, permission_key) do nothing;
 -- support: reports, analytics
 insert into admin_role_permissions (role_id, permission_key)
 select r.id, p.key
-from role_ids r
+from admin_roles r
 cross join (select key from admin_permissions where key in
   ('manage_reports','view_analytics')) p
 where r.name = 'support'
@@ -178,7 +174,7 @@ on conflict (role_id, permission_key) do nothing;
 -- read_only: analytics only
 insert into admin_role_permissions (role_id, permission_key)
 select r.id, p.key
-from role_ids r
+from admin_roles r
 cross join (select key from admin_permissions where key in
   ('view_analytics')) p
 where r.name = 'read_only'
