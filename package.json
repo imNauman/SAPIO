@@ -1,0 +1,34 @@
+{
+  "name": "sapio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SAPIO — a production-ready dating application foundation (React Native + Expo frontend, Node/Express backend, Supabase).",
+  "workspaces": [
+    "backend",
+    "mobile"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:mobile": "npm run start --workspace mobile",
+    "build:backend": "npm run build --workspace backend",
+    "start:backend": "npm run start --workspace backend",
+    "build:admin": "npm run build --workspace admin",
+    "start:admin": "npm run start --workspace admin",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspace admin"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@react-native-community/netinfo": "11.3.1",
+    "expo-image": "~1.13.0",
+    "expo-image-manipulator": "~12.0.5",
+    "expo-image-picker": "~15.1.0"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "cli": {
+    "version": ">= 7.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview-aab": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://your-project-ref.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_PROD_ANON_KEY",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.sapio.app"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "../android-service-account.json",
+        "track": "internal"
+      }
+    }
+  }
+}
