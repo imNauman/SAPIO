@@ -15,6 +15,11 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "REPLACE_WITH_YOUR_SUPABASE_URL",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "REPLACE_WITH_YOUR_SUPABASE_ANON_KEY",
+        "EXPO_PUBLIC_API_BASE_URL": "REPLACE_WITH_YOUR_BACKEND_URL"
       }
     },
     "preview-aab": {
