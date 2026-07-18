@@ -54,14 +54,14 @@ values ('chat-images', 'chat-images', true)
 on conflict (id) do nothing;
 
 -- Public read of chat images (bucket is public).
-drop policy if exists "Chat images are publicly readable";
+drop policy if exists "Chat images are publicly readable" on storage.objects;
 create policy "Chat images are publicly readable"
   on storage.objects for select
   using (bucket_id = 'chat-images');
 
 -- Only authenticated users may upload chat images, and only into a folder
 -- named after their own user id (chat-images/{userId}/...).
-drop policy if exists "Users upload their own chat images";
+drop policy if exists "Users upload their own chat images" on storage.objects;
 create policy "Users upload their own chat images"
   on storage.objects for insert
   with check (
@@ -71,7 +71,7 @@ create policy "Users upload their own chat images"
   );
 
 -- Uploaders may delete their own chat images.
-drop policy if exists "Users delete their own chat images";
+drop policy if exists "Users delete their own chat images" on storage.objects;
 create policy "Users delete their own chat images"
   on storage.objects for delete
   using (
