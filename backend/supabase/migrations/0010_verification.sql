@@ -78,7 +78,7 @@ create index if not exists verification_history_request_idx
 -- ---------------------------------------------------------------------------
 -- updated_at trigger (reuse shared helper if present).
 -- ---------------------------------------------------------------------------
-do $$
+do $do$
 begin
   if not exists (
     select 1 from pg_proc where proname = 'set_updated_at'
@@ -90,7 +90,7 @@ begin
       return new;
     end; $$;
   end if;
-end $$;
+end $do$;
 
 drop trigger if exists verification_requests_set_updated_at on public.verification_requests;
 create trigger verification_requests_set_updated_at

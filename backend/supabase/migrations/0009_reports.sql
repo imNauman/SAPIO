@@ -103,7 +103,7 @@ create index if not exists report_evidence_report_idx
 -- ---------------------------------------------------------------------------
 -- updated_at trigger (shared helper if it exists, else inline).
 -- ---------------------------------------------------------------------------
-do $$
+do $do$
 begin
   if not exists (
     select 1 from pg_proc where proname = 'set_updated_at'
@@ -115,7 +115,7 @@ begin
       return new;
     end; $$;
   end if;
-end $$;
+end $do$;
 
 drop trigger if exists reports_set_updated_at on public.reports;
 create trigger reports_set_updated_at

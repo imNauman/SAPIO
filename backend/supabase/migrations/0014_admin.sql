@@ -89,7 +89,7 @@ alter table admin_activity_logs    enable row level security;
 -- policies allow service_role access so the same client works whether or not
 -- RLS is enforced, and document the intent that only the trusted backend may
 -- read/write admin data.
-do $$
+do $do$
 declare
   t text;
 begin
@@ -105,7 +105,7 @@ begin
       t || '_service_role', t
     );
   end loop;
-end $$;
+end $do$;
 
 -- ---------------------------------------------------------------------------
 -- Seed: roles
