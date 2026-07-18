@@ -94,7 +94,7 @@ export const boostRepository = {
   },
 };
 
-interface BoostRow {
+export interface BoostRow {
   id: string;
   user_id: string;
   started_at: string;

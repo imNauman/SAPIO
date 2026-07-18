@@ -9,6 +9,8 @@ build/
 *.tsbuildinfo
 .expo/
 web-build/
+.next/
+out/
 
 # Env files (keep examples)
 .env

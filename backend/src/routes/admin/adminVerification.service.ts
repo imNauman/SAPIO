@@ -35,7 +35,7 @@ export const adminVerificationService = {
       request.status,
       status,
       {
-        actorId: adminId,
+        reviewedBy: adminId,
         rejectionReason: opts.rejectionReason,
       },
     );

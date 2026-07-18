@@ -4,7 +4,7 @@ import { badRequest } from '../../utils/errors';
 import {
   ALLOWED_MIME_TYPES,
   MAX_FILE_BYTES,
-} from './photo.validation';
+} from '../../utils/upload';
 
 /**
  * Multer middleware for photo uploads.

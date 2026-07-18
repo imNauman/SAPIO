@@ -7,7 +7,6 @@ import { usePhotoStore } from '../store/photoStore';
 import { useAuthStore } from '../store/authStore';
 import { SettingSection } from '../components/SettingSection';
 import { SettingItem } from '../components/SettingItem';
-import { Button } from '../components/Button';
 import { ConfirmationDialog } from '../components/ConfirmationDialog';
 
 /**

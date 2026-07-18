@@ -112,7 +112,7 @@ export const chatController = {
   getHistory: [
     validateQuery(messageHistorySchema),
     asyncHandler(async (req: Request, res: Response) => {
-      const { conversationId, before, limit } = req.query as {
+      const { conversationId, before, limit } = req.query as unknown as {
         conversationId: string;
         before?: string;
         limit: number;

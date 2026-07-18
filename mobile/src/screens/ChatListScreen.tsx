@@ -5,7 +5,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useChatStore } from '../store/chatStore';
 import { ConversationCard } from '../components/ConversationCard';
 import { EmptyChatScreen } from '../components/EmptyChatScreen';
-import { LoadingChatScreen } from '../components/LoadingChatScreen';
 import { ConversationSkeleton } from '../components/chat/ConversationSkeleton';
 import type { AppStackParamList } from '../navigation/RootNavigator';
 import type { Conversation } from '../lib/api/chat.api';

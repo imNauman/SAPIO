@@ -8,17 +8,17 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
  * wants to see. Empty set = show everyone (no gender hard-filter). Tapping a
  * chip toggles membership. Reuses the chip pattern from the settings screens.
  */
-interface GenderSelectorProps {
-  value: string[];
-  options: string[];
-  onToggle: (gender: string) => void;
+interface GenderSelectorProps<T extends string> {
+  value: T[];
+  options: T[];
+  onToggle: (gender: T) => void;
 }
 
-export function GenderSelector({
+export function GenderSelector<T extends string>({
   value,
   options,
   onToggle,
-}: GenderSelectorProps) {
+}: GenderSelectorProps<T>) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Show me</Text>

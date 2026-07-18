@@ -3,7 +3,10 @@ import { badRequest, forbidden, notFound } from '../../utils/errors';
 import { matchRepository } from '../match/match.repository';
 import { blockService } from '../block/block.service';
 import { profileRepo } from '../profile/profile.repository';
-import { conversationRepository } from './conversation.repository';
+import {
+  conversationRepository,
+  ONLINE_WITHIN_MINUTES,
+} from './conversation.repository';
 import { messageRepository } from './message.repository';
 import { chatImageRepository } from './chat-image.repository';
 import { emit } from '../../events/eventBus';
@@ -14,7 +17,6 @@ import {
   ConversationWithProfile,
   EditMessageInput,
   MessageRecord,
-  MessageStatus,
   SendMessageInput,
   TypingInput,
 } from './chat.types';
@@ -304,7 +306,7 @@ export const chatService = {
     if (!lastActive) return false;
     const diffMin =
       (Date.now() - new Date(lastActive).getTime()) / 60000;
-    return diffMin <= conversationRepository.ONLINE_WITHIN_MINUTES;
+    return diffMin <= ONLINE_WITHIN_MINUTES;
   },
 
   /** Build a short preview string for the conversation list. */

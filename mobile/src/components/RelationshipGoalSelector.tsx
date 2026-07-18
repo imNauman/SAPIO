@@ -8,17 +8,17 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
  * Tapping the active goal clears it (back to null = Any). Reuses the chip
  * pattern already used in RecommendationSettingsScreen.
  */
-interface RelationshipGoalSelectorProps {
-  value: string | null;
-  options: string[];
-  onSelect: (goal: string | null) => void;
+interface RelationshipGoalSelectorProps<T extends string> {
+  value: T | null;
+  options: T[];
+  onSelect: (goal: T | null) => void;
 }
 
-export function RelationshipGoalSelector({
+export function RelationshipGoalSelector<T extends string>({
   value,
   options,
   onSelect,
-}: RelationshipGoalSelectorProps) {
+}: RelationshipGoalSelectorProps<T>) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Relationship goal</Text>

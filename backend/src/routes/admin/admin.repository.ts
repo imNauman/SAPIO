@@ -39,12 +39,10 @@ const LOGS = 'admin_activity_logs';
 // ---- Domain tables (read-only listings) ------------------------------------
 const PROFILES = 'profiles';
 const REPORTS = 'reports';
-const REPORT_CATS = 'report_categories';
 const REPORT_EVIDENCE = 'report_evidence';
 const VERIF = 'verification_requests';
 const VERIF_PHOTOS = 'verification_photos';
 const SUBS = 'user_subscriptions';
-const SUB_PLANS = 'subscription_plans';
 const BOOSTS = 'boost_sessions';
 const NOTIFS = 'notifications';
 const AUTH_USERS = 'auth.users';
@@ -364,7 +362,7 @@ export const adminRepository = {
 
     // Batch-fetch auth users for email + status.
     const ids = rows.map((r) => r.user_id);
-    const emails = new Map<string, { email: string; status: string }>();
+    const emails = new Map<string, { email: string | null; status: string }>();
     if (ids.length > 0) {
       const { data: authData, error: authErr } = await client
         .from(AUTH_USERS)
@@ -538,7 +536,7 @@ export const adminRepository = {
       .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 25) - 1);
     const { data, error } = await query;
     if (error) throw new AppError(500, error.message);
-    return (data as Array<{
+    return ((data as Array<{
       id: string;
       reporter_user_id: string;
       reported_user_id: string;
@@ -548,7 +546,17 @@ export const adminRepository = {
       priority: string;
       created_at: string;
       updated_at: string;
-    }>) ?? [];
+    }>) ?? []).map((r) => ({
+      id: r.id,
+      reporterUserId: r.reporter_user_id,
+      reportedUserId: r.reported_user_id,
+      categoryName: r.category_name,
+      description: r.description,
+      status: r.status,
+      priority: r.priority,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+    }));
   },
 
   async getReport(
@@ -591,10 +599,15 @@ export const adminRepository = {
       .select('id, image_url')
       .eq('report_id', reportId);
     return {
-      ...row,
+      id: row.id,
       reporterUserId: row.reporter_user_id,
       reportedUserId: row.reported_user_id,
       categoryName: row.category_name,
+      description: row.description,
+      status: row.status,
+      priority: row.priority,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
       evidence: (ev as Array<{ id: string; image_url: string }>).map((e) => ({
         id: e.id,
         imageUrl: e.image_url,

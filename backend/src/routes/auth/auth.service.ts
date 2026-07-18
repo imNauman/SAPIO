@@ -1,5 +1,5 @@
 import { supabaseAdmin, supabaseAnon } from '../../config/supabase';
-import { User } from '@supabase/supabase-js';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 import { AppError } from '../../utils/errors';
 import {
   AuthResult,
@@ -201,10 +201,10 @@ export const authService = {
       .maybeSingle();
     if (error) {
       // If we can't read auth.users directly, fall back to listUsers.
-      const list = await supabaseAdmin.auth.admin.listUsers({
-        filters: { email },
-      });
-      return (list.data.users ?? []).some((u) => u.id !== exceptUserId);
+      const list = await supabaseAdmin.auth.admin.listUsers();
+      return (list.data.users ?? []).some(
+        (u) => u.email === email && u.id !== exceptUserId,
+      );
     }
     return Boolean(data);
   },

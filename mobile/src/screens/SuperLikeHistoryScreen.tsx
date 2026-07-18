@@ -19,7 +19,6 @@ import { SuperLikeButton } from '../components/SuperLikeButton';
  * screen only reflects state from `superLikeStore`.
  */
 export function SuperLikeHistoryScreen() {
-  const history = useSuperLikeStore((s) => s.history);
   const received = useSuperLikeStore((s) => s.received);
   const usage = useSuperLikeStore((s) => s.usage);
   const loading = useSuperLikeStore((s) => s.loading);

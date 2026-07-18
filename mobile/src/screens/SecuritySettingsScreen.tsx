@@ -6,7 +6,6 @@ import {
   ScrollView,
   TextInput,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useSettingsStore } from '../store/settingsStore';
 import { SettingSection } from '../components/SettingSection';
 import { SettingItem } from '../components/SettingItem';
@@ -22,7 +21,6 @@ import { ConfirmationDialog } from '../components/ConfirmationDialog';
  * from the settings bundle.
  */
 export function SecuritySettingsScreen() {
-  const navigation = useNavigation();
   const { bundle, changePassword, changeEmail, saving, error } =
     useSettingsStore();
 

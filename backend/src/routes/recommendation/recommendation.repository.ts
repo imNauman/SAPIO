@@ -29,7 +29,7 @@ const REPORTS = 'reports';
 /** A user is "active" if seen within this window. */
 export const ACTIVE_WITHIN_DAYS = 30;
 
-interface CandidateRow {
+export interface CandidateRow {
   id: string;
   user_id: string;
   display_name: string | null;

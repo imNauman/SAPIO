@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SettingSection } from '../components/SettingSection';
 import { SettingItem } from '../components/SettingItem';
+import type { AppStackParamList } from '../navigation/RootNavigator';
 
 /**
  * Help & Support screen.
@@ -13,10 +15,11 @@ import { SettingItem } from '../components/SettingItem';
 type Article = 'privacy' | 'terms' | 'guidelines' | 'contact' | 'about';
 
 export function HelpSupportScreen() {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<AppStackParamList>>();
 
   const open = (article: Article) => {
-    navigation.navigate('About' as never, { article } as never);
+    navigation.navigate('About', { article });
   };
 
   return (

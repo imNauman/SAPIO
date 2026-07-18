@@ -12,10 +12,7 @@ import { AppStackParamList } from '../navigation/RootNavigator';
  */
 type AboutRouteProp = RouteProp<AppStackParamList, 'About'>;
 
-const ARTICLES: Record<
-  string,
-  { title: string; body: string }
-> = {
+const ARTICLES: Record<string, string> = {
   privacy:
     'Privacy Policy\n\nSAPIO respects your privacy. We collect only the data needed to operate the service: your profile, photos, location (for discovery), and usage signals. You can control visibility via Privacy settings. We never sell your data. Deleting your account soft-removes your profile from discovery while retaining legal records.',
   terms:
@@ -30,9 +27,10 @@ const ARTICLES: Record<
 
 export function AboutScreen({ route }: { route?: AboutRouteProp }) {
   const article = (route?.params as { article?: string } | undefined)?.article;
-  const content = article ? ARTICLES[article] : ARTICLES.about;
-  const title = content?.title ?? 'About SAPIO';
-  const body = content?.body ?? '';
+  const raw = article ? ARTICLES[article] : ARTICLES.about;
+  const splitAt = raw.indexOf('\n\n');
+  const title = splitAt > -1 ? raw.slice(0, splitAt) : 'About SAPIO';
+  const body = splitAt > -1 ? raw.slice(splitAt + 2) : raw;
 
   return (
     <ScrollView style={styles.container}>

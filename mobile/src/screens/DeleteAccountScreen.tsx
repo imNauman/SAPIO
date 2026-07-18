@@ -54,7 +54,7 @@ export function DeleteAccountScreen() {
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <Button
           title="Delete Account"
-          danger
+          variant="danger"
           loading={saving}
           disabled={password.length < 1}
           onPress={() => setConfirm(true)}

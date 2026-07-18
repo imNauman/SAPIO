@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { MAX_FILE_BYTES, ALLOWED_MIME_TYPES } from '../../utils/upload';
 
 /**
  * Validation schemas for the photo module.

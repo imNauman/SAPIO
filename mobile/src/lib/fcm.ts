@@ -118,7 +118,10 @@ export function setupNotificationListeners(): () => void {
       const target = routeFromPayload(payload);
       const nav = navigationRef.current;
       if (target && nav?.isReady?.()) {
-        nav.navigate(target.screen, target.params);
+        (nav.navigate as unknown as (screen: string, params?: object) => void)(
+          target.screen,
+          target.params,
+        );
       }
     },
   );

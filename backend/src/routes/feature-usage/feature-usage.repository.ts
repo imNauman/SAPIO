@@ -1,5 +1,4 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { supabaseAdmin } from '../../config/supabase';
 import { AppError } from '../../utils/errors';
 
 /**
@@ -71,14 +70,14 @@ export const featureUsageRepository = {
             .eq('feature_key', featureKey)
             .single();
           if (againErr) throw new AppError(500, againErr.message);
-          return this.normalize(again as FeatureUsageRow);
+          return this.normalize(again as FeatureUsageDbRow);
         }
         throw new AppError(500, insertErr.message);
       }
-      return this.normalize(inserted as FeatureUsageRow);
+      return this.normalize(inserted as FeatureUsageDbRow);
     }
 
-    const row = data as FeatureUsageRow;
+    const row = data as FeatureUsageDbRow;
     if (isStale(row.last_reset)) {
       const { data: updated, error: updateErr } = await client
         .from(TABLE)
@@ -91,7 +90,7 @@ export const featureUsageRepository = {
         .select('id, user_id, feature_key, daily_limit, used_today, last_reset')
         .single();
       if (updateErr) throw new AppError(500, updateErr.message);
-      return this.normalize(updated as FeatureUsageRow);
+      return this.normalize(updated as FeatureUsageDbRow);
     }
 
     // Keep the resolved daily limit in sync with the subscription feature.
@@ -103,7 +102,7 @@ export const featureUsageRepository = {
         .select('id, user_id, feature_key, daily_limit, used_today, last_reset')
         .single();
       if (updateErr) throw new AppError(500, updateErr.message);
-      return this.normalize(updated as FeatureUsageRow);
+      return this.normalize(updated as FeatureUsageDbRow);
     }
 
     return this.normalize(row);
@@ -114,14 +113,21 @@ export const featureUsageRepository = {
     client: SupabaseClient,
     id: string,
   ): Promise<FeatureUsageRow> {
+    const { data: current, error: readErr } = await client
+      .from(TABLE)
+      .select('used_today')
+      .eq('id', id)
+      .single();
+    if (readErr) throw new AppError(500, readErr.message);
+    const next = ((current as { used_today: number }).used_today ?? 0) + 1;
     const { data, error } = await client
       .from(TABLE)
-      .update({ used_today: supabaseAdmin.raw('used_today + 1') })
+      .update({ used_today: next })
       .eq('id', id)
       .select('id, user_id, feature_key, daily_limit, used_today, last_reset')
       .single();
     if (error) throw new AppError(500, error.message);
-    return this.normalize(data as FeatureUsageRow);
+    return this.normalize(data as FeatureUsageDbRow);
   },
 
   /** Read the current usage for a user + feature (no reset side effects). */
@@ -137,11 +143,11 @@ export const featureUsageRepository = {
       .eq('feature_key', featureKey)
       .maybeSingle();
     if (error) throw new AppError(500, error.message);
-    return data ? this.normalize(data as FeatureUsageRow) : null;
+    return data ? this.normalize(data as FeatureUsageDbRow) : null;
   },
 
   /** Normalize a snake_case DB row into the camelCase shape. */
-  normalize(row: FeatureUsageRow): FeatureUsageRow {
+  normalize(row: FeatureUsageDbRow): FeatureUsageRow {
     return {
       id: row.id,
       userId: row.user_id,
@@ -154,6 +160,16 @@ export const featureUsageRepository = {
 };
 
 interface FeatureUsageRow {
+  id: string;
+  userId: string;
+  featureKey: string;
+  dailyLimit: number;
+  usedToday: number;
+  lastReset: string;
+}
+
+/** Raw snake_case row as stored in Postgres. */
+interface FeatureUsageDbRow {
   id: string;
   user_id: string;
   feature_key: string;

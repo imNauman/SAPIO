@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { authenticate } from './authenticate';
 import { forbidden, unauthorized } from '../utils/errors';
 import { adminRepository } from '../routes/admin/admin.repository';
+import { supabaseAdmin } from '../config/supabase';
 import { AdminUser } from '../routes/admin/admin.types';
 
 /**
@@ -41,7 +42,7 @@ export function requireAdmin(
   }
 
   adminRepository
-    .getAdminByUserId(req.user.id)
+    .getAdminByUserId(supabaseAdmin, req.user.id)
     .then((admin) => {
       if (!admin) {
         return next(forbidden('Your account is not authorized for admin access'));
